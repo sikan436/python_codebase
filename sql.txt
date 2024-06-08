@@ -1,0 +1,84 @@
+-- Find out the employees who attended all compan events
+
+drop table if exists employees;
+create table employees
+(
+	id			int,
+	name		varchar(50)
+);
+insert into employees values(1, 'Lewis');
+insert into employees values(2, 'Max');
+insert into employees values(3, 'Charles');
+insert into employees values(4, 'Sainz');
+
+
+drop table if exists events;
+create table events
+(
+	event_name		varchar(50),
+	emp_id			int,
+	dates			date
+);
+insert into events values('Product launch', 1, to_date('01-03-2024','DD-MM-YYYY'));
+insert into events values('Product launch', 3, to_date('01-03-2024','DD-MM-YYYY'));
+insert into events values('Product launch', 4, to_date('01-03-2024','DD-MM-YYYY'));
+insert into events values('Conference', 2, to_date('02-03-2024','DD-MM-YYYY'));
+insert into events values('Conference', 2, to_date('03-03-2024','DD-MM-YYYY'));
+insert into events values('Conference', 3, to_date('02-03-2024','DD-MM-YYYY'));
+insert into events values('Conference', 4, to_date('02-03-2024','DD-MM-YYYY'));
+insert into events values('Training', 3, to_date('04-03-2024','DD-MM-YYYY'));
+insert into events values('Training', 2, to_date('04-03-2024','DD-MM-YYYY'));
+insert into events values('Training', 4, to_date('04-03-2024','DD-MM-YYYY'));
+insert into events values('Training', 4, to_date('05-03-2024','DD-MM-YYYY'));
+
+
+
+select * from employees;
+select * from events;
+
+
+
+select e.name,count(ev.event_name),count(e.id) from employees e 
+join events ev
+on ev.emp_id=e.id
+group by e.name
+
+
+select name,count(distinct ev.event_name) as no_of_events from employees e 
+join events ev
+on ev.emp_id=e.id
+group by name
+having count(distinct ev.event_name)=(select count(distinct event_name) from events)
+
+select count(distinct event_name) from events
+
+
+
+create table sku 
+(
+sku_id int,
+price_date date ,
+price int
+);
+delete from sku;
+insert into sku values 
+(1,'2023-01-01',10)
+,(1,'2023-02-15',15)
+,(1,'2023-03-03',18)
+,(1,'2023-03-27',15)
+,(1,'2023-04-06',20);
+
+
+with cte1 as (SELECT month::date
+FROM generate_series('2023-01-01', '2024-01-01', INTERVAL '1 Month') month),
+cte2 as 
+(select *,lead(price_date,1,price_date +INTERVAL '1 Month') over() as prev_date from sku)
+
+select * from cte1 c1
+join cte2 c2
+on c1.month between c2.price_date and c2.prev_date
+
+
+
+
+

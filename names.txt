@@ -1,0 +1,3 @@
+ram,"mota, tu mota"
+bhalu,chota
+datciu,patla
